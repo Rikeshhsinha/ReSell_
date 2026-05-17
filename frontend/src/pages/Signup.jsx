@@ -12,7 +12,7 @@ const Signup = () => {
         </h1>
 
         <p className="text-center text-gray-500 mb-8">
-          Join OLX Clone today
+          Join ReSell_ today
         </p>
 
         <form className="space-y-5">

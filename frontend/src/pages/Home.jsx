@@ -46,7 +46,7 @@ const Home = () => {
 
             {/* Logo */}
             <h1 className="text-2xl md:text-3xl font-bold text-blue-700 cursor-pointer">
-              OLX Clone
+              ReSell_
             </h1>
 
             {/* Buttons */}
@@ -199,7 +199,7 @@ const Home = () => {
 
         <div className="max-w-7xl mx-auto px-4 py-6 text-center text-sm md:text-base">
 
-          © 2026 OLX Clone. All rights reserved.
+          © 2026 ReSell_. All rights reserved.
 
         </div>
 
