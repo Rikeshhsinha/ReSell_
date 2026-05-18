@@ -1,63 +1,107 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-import { FaMapMarkerAlt } from "react-icons/fa";
-
+import { Link } from "react-router-dom";
 
 const Home = () => {
 
-  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
 
-  // Get Logged In User
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const [search, setSearch] = useState("");
+
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const user = JSON.parse(localStorage.getItem("user"));
 
 
-  // Logout Function
-  const handleLogout = () => {
 
-    localStorage.removeItem("token");
+  // Fetch Products
+  useEffect(() => {
 
-    localStorage.removeItem("user");
+    fetchProducts();
 
-    navigate("/login");
+  }, []);
+
+
+
+  // Fetch Products
+  const fetchProducts = async () => {
+
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/products"
+      );
+
+      setProducts(res.data);
+
+      setFilteredProducts(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
   };
 
 
-  const products = [
-    {
-      id: 1,
-      title: "iPhone 14 Pro",
-      price: "₹85,000",
-      location: "Delhi",
-      image:
-        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
-    },
-    {
-      id: 2,
-      title: "Gaming Laptop",
-      price: "₹65,000",
-      location: "Mumbai",
-      image:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853",
-    },
-    {
-      id: 3,
-      title: "Royal Enfield",
-      price: "₹1,20,000",
-      location: "Patna",
-      image:
-        "https://images.unsplash.com/photo-1558981806-ec527fa84c39",
-    },
-    {
-      id: 4,
-      title: "Modern Sofa",
-      price: "₹18,000",
-      location: "Bangalore",
-      image:
-        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
-    },
-  ];
+
+  // Search Products
+  const handleSearch = () => {
+
+    const filtered = products.filter((product) => {
+
+      return (
+
+        product.title
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+
+        product.category
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+
+        product.location
+          .toLowerCase()
+          .includes(search.toLowerCase())
+
+      );
+
+    });
+
+    setFilteredProducts(filtered);
+
+  };
+
+
+
+  // Category Filter
+  const filterCategory = (category) => {
+
+    setSelectedCategory(category);
+
+    const updated = products.filter(
+      (product) => product.category === category
+    );
+
+    setFilteredProducts(updated);
+
+  };
+
+
+
+  // Clear Filter
+  const clearFilter = () => {
+
+    setSelectedCategory("");
+
+    setFilteredProducts(products);
+
+  };
+
 
 
   return (
@@ -65,229 +109,265 @@ const Home = () => {
     <div className="min-h-screen bg-gray-100">
 
       {/* Navbar */}
-      <nav className="bg-white shadow-md sticky top-0 z-50">
+      <nav className="bg-white shadow-md px-4 md:px-8 py-4 flex items-center justify-between">
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-blue-700">
+          ReSell_
+        </h1>
 
-          <div className="flex items-center justify-between h-16">
+        <div className="flex items-center gap-3">
 
-            {/* Logo */}
-            <h1 className="text-2xl md:text-3xl font-bold text-blue-700 cursor-pointer">
-              ReSell_
-            </h1>
+          <select className="border rounded-lg px-3 py-2 text-gray-700">
 
+            <option>Patna</option>
+            <option>Delhi</option>
+            <option>Mumbai</option>
+            <option>Bhilai</option>
 
-            {/* Right Side */}
-            <div className="flex items-center gap-3">
+          </select>
 
-              {/* Location */}
-              <div className="hidden md:flex items-center gap-2 border px-3 py-2 rounded-xl">
+          {user ? (
 
-                <FaMapMarkerAlt className="text-blue-600" />
+            <>
+              <p className="hidden md:block font-semibold text-blue-700">
+                Hello, {user.name}
+              </p>
 
-                <select className="outline-none text-sm">
+              <button
+                onClick={() => {
 
-                  <option>Patna</option>
-                  <option>Delhi</option>
-                  <option>Mumbai</option>
-                  <option>Bangalore</option>
+                  localStorage.removeItem("token");
 
-                </select>
+                  localStorage.removeItem("user");
 
-              </div>
+                  window.location.reload();
 
-
-              {/* Auth Buttons */}
-              {user ? (
-
-                <div className="flex items-center gap-3">
-
-                  <h1 className="font-semibold text-blue-700 hidden md:block">
-                    Hello, {user.name}
-                  </h1>
-
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition"
-                  >
-                    Logout
-                  </button>
-
-                </div>
-
-              ) : (
-
-                <Link to="/login">
-
-                  <button className="px-4 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition">
-
-                    Login
-
-                  </button>
-
-                </Link>
-
-              )}
-
-              {/* Sell Button */}
-              <button className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
-                Sell Product
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded-xl"
+              >
+                Logout
               </button>
 
-            </div>
+              <Link
+                to="/sell-product"
+                className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                Sell Product
+              </Link>
+            </>
 
-          </div>
+          ) : (
+
+            <Link
+              to="/login"
+              className="px-5 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition"
+            >
+              Login
+            </Link>
+
+          )}
 
         </div>
 
       </nav>
 
 
+
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-900 via-blue-700 to-cyan-500 text-white">
+      <section className="bg-gradient-to-r from-blue-900 via-blue-700 to-cyan-500 text-white py-20 px-4 md:px-8 text-center">
 
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
+        <h2 className="text-4xl md:text-6xl font-bold mb-4">
+          Buy & Sell Anything Easily
+        </h2>
 
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold leading-tight">
-            Buy & Sell Anything Easily
-          </h2>
+        <p className="text-lg text-gray-200 mb-8">
+          Find nearby sellers and buy products safely in your city.
+        </p>
 
-          <p className="mt-5 text-gray-200 text-base md:text-xl max-w-2xl mx-auto">
-            Find nearby sellers and buy products safely in your city.
-          </p>
 
-          {/* Search Bar */}
-          <div className="mt-10 max-w-4xl mx-auto flex flex-col md:flex-row gap-3">
 
-            {/* Search */}
-            <div className="flex flex-1 bg-white rounded-2xl overflow-hidden shadow-2xl">
+        {/* Search */}
+        <div className="max-w-3xl mx-auto flex bg-white rounded-2xl overflow-hidden shadow-lg">
 
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="flex-1 px-5 py-4 text-black outline-none"
-              />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 px-5 py-4 text-black outline-none"
+          />
 
-              <button className="bg-blue-700 hover:bg-blue-800 transition px-8 py-4 font-semibold">
-                Search
-              </button>
-
-            </div>
-
-          </div>
+          <button
+            onClick={handleSearch}
+            className="bg-blue-700 px-8 text-white font-semibold hover:bg-blue-800 transition"
+          >
+            Search
+          </button>
 
         </div>
 
       </section>
 
 
+
       {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 py-14">
+      <section className="px-4 md:px-8 py-12">
 
-        <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
-          Categories
-        </h3>
+        <div className="flex items-center justify-between mb-8">
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-5">
+          <h3 className="text-3xl font-bold text-gray-800">
+            Categories
+          </h3>
+
+          <button
+            onClick={clearFilter}
+            className="text-blue-600 font-semibold"
+          >
+            Clear Filter
+          </button>
+
+        </div>
+
+
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
 
           {["Mobiles", "Cars", "Bikes", "Furniture"].map((category, index) => (
 
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center hover:scale-105 hover:shadow-2xl transition duration-300 cursor-pointer"
+              onClick={() => filterCategory(category)}
+              className={`bg-white shadow-lg rounded-2xl p-8 text-center hover:scale-105 transition cursor-pointer
+              ${
+                selectedCategory === category
+                  ? "border-2 border-blue-600"
+                  : ""
+              }`}
             >
 
-              <h4 className="text-lg md:text-xl font-semibold text-blue-700">
+              <h4 className="text-xl font-semibold text-blue-700">
                 {category}
               </h4>
 
             </div>
-
           ))}
-
         </div>
 
       </section>
 
 
+
       {/* Products */}
-      <section className="max-w-7xl mx-auto px-4 pb-16">
+      <section className="px-4 md:px-8 pb-16">
 
         <div className="flex items-center justify-between mb-8">
 
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-800">
+          <h3 className="text-3xl font-bold text-gray-800">
             Nearby Products
           </h3>
 
-          <button className="text-blue-600 font-semibold hover:underline">
-            View All
-          </button>
-
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {products.map((product) => (
+
+        {/* No Products */}
+        {filteredProducts.length === 0 && (
+
+          <div className="text-center text-gray-500 text-xl mt-10">
+
+            No Products Found
+
+          </div>
+
+        )}
+
+
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+          {filteredProducts.map((product) => (
 
             <div
-              key={product.id}
-              className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 hover:-translate-y-2"
+              key={product._id}
+              className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition"
             >
 
-              {/* Image */}
-              <div className="overflow-hidden">
+              {/* Product Image */}
+              <img
+                src={
+                  product.images && product.images.length > 0
+                    ? `http://localhost:5000/uploads/${product.images[0]}`
+                    : product.image
+                    ? `http://localhost:5000/uploads/${product.image}`
+                    : "https://via.placeholder.com/300"
+                }
+                alt={product.title}
+                className="w-full h-56 object-cover"
+              />
 
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="h-56 w-full object-cover hover:scale-110 transition duration-500"
-                />
 
-              </div>
 
-              {/* Content */}
+              {/* Product Details */}
               <div className="p-5">
 
                 <h4 className="text-xl font-semibold text-gray-800">
                   {product.title}
                 </h4>
 
-                <p className="text-blue-700 text-2xl font-bold mt-2">
-                  {product.price}
+                <p className="text-blue-700 font-bold text-2xl mt-2">
+                  ₹{product.price}
                 </p>
 
-                {/* Location */}
-                <div className="flex items-center gap-2 mt-2 text-gray-500 text-sm">
+                <p className="text-gray-500 mt-1">
+                  📍 {product.location}
+                </p>
 
-                  <FaMapMarkerAlt />
+                <p className="text-gray-600 text-sm mt-3 line-clamp-2">
+                  {product.description}
+                </p>
 
-                  <span>{product.location}</span>
+
+
+                <div className="mt-3">
+
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
+
+                    {product.category}
+
+                  </span>
 
                 </div>
 
-                <button className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition font-medium">
-                  View Details
-                </button>
+
+
+                {/* View Details */}
+                <Link
+                  to={`/product/${product._id}`}
+                  className="block mt-5"
+                >
+
+                  <button className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
+
+                    View Details
+
+                  </button>
+
+                </Link>
 
               </div>
 
             </div>
-
           ))}
-
         </div>
 
       </section>
 
 
+
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300">
+      <footer className="bg-gray-900 text-gray-300 text-center py-6">
 
-        <div className="max-w-7xl mx-auto px-4 py-6 text-center text-sm md:text-base">
-
-          © 2026 ReSell_. All rights reserved.
-
-        </div>
+        © 2026 ReSell_. All rights reserved.
 
       </footer>
 

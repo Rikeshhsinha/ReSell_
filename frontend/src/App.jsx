@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import SellProduct from "./pages/SellProduct";
 
 function App() {
 
@@ -21,6 +22,8 @@ function App() {
 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         
+        <Route path="/sell-product" element={<SellProduct />}/>
+
       </Routes>
 
     </BrowserRouter>
