@@ -76,7 +76,7 @@ const SellProduct = () => {
 
       // API
       const res = await axios.post(
-        "http://localhost:5000/api/products",
+        "https://resell-4hzi.onrender.com/api/products",
         formData,
         {
           headers: {

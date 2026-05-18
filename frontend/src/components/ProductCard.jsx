@@ -5,7 +5,7 @@ const ProductCard = ({ product }) => {
     <Link to={`/product/${product._id}`}>
       <div className="border rounded-lg overflow-hidden shadow hover:shadow-lg">
         <img
-          src={`http://localhost:5000/uploads/${product.image}`}
+          src={`https://resell-4hzi.onrender.com/uploads/${product.image}`}
           className="h-52 w-full object-cover"
         />
 

@@ -12,6 +12,8 @@ const Home = () => {
 
   const [search, setSearch] = useState("");
 
+  const [suggestions, setSuggestions] = useState([]);
+
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -33,7 +35,7 @@ const Home = () => {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/products"
+        "https://resell-4hzi.onrender.com/api/products"
       );
 
       setProducts(res.data);
@@ -296,9 +298,9 @@ const Home = () => {
               <img
                 src={
                   product.images && product.images.length > 0
-                    ? `http://localhost:5000/uploads/${product.images[0]}`
+                    ? `https://resell-4hzi.onrender.com/uploads/${product.images[0]}`
                     : product.image
-                    ? `http://localhost:5000/uploads/${product.image}`
+                    ? `https://resell-4hzi.onrender.com/uploads/${product.image}`
                     : "https://via.placeholder.com/300"
                 }
                 alt={product.title}

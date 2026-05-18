@@ -21,7 +21,7 @@ const ProductDetails = () => {
   return (
     <div className="grid md:grid-cols-2 gap-10 p-10">
       <img
-        src={`http://localhost:5000/uploads/${product.image}`}
+        src={`https://resell-4hzi.onrender.com/uploads/${product.image}`}
         className="w-full rounded-lg"
       />
 
